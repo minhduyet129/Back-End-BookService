@@ -37,6 +37,7 @@ namespace book_service
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             
             services.AddControllers();
+            services.AddCors();
             // For Identity  
             services.AddIdentity<ApplicationUser, IdentityRole>()  
                 .AddEntityFrameworkStores<BookContext>()  
@@ -104,6 +105,12 @@ namespace book_service
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            
+            
             app.UseAuthentication();
             app.UseAuthorization();
             

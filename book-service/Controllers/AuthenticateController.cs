@@ -43,7 +43,11 @@ namespace book_service.Controllers
       var result =await _userManager.CreateAsync(user,model.Password);
       if(!result.Succeeded)
       return StatusCode(StatusCodes.Status500InternalServerError,new Response{Status="Error",Message="User creation failed! Please check user details and try again."});
-
+      if(!await _roleManager.RoleExistsAsync(RoleName.User))
+      {
+        await _roleManager.CreateAsync(new IdentityRole(RoleName.User));
+      }
+      await _userManager.AddToRoleAsync(user,RoleName.User);
       return Ok(new Response{Status="Success",Message="User created successfully!"});
     }
 
@@ -95,7 +99,9 @@ namespace book_service.Controllers
         return Ok(new  
                 {  
                     token = new JwtSecurityTokenHandler().WriteToken(token),  
-                    expiration = token.ValidTo  
+                    expiration = token.ValidTo ,
+                    role =userRoles,
+                    userId=user
                 });  
       }
        return Unauthorized(); 

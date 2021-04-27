@@ -35,16 +35,13 @@ namespace book_service.Controllers
 
         var date=DateTime.Today.Month;
         var timesBorrow=_context.BorrowBooks.Where(x=>x.UserId==borrow.UserId && x.BorrowDate.Month==date );
-        if(timesBorrow ==null){
-          return BadRequest();
-        }
-        if(timesBorrow !=null){
-          if(timesBorrow.Count()>2) return Ok("Ban da het lan muon trong thang");
-        }
         
-        var a= _context.BorrowBooks.Where(x => x.UserId == borrow.UserId && x.BorrowDate.Month == date);
+        if(timesBorrow.Count()>2) return BadRequest("Ban da het lan muon trong thang");
+        
+        
+        
         var items=0;
-        foreach (var i in a){
+        foreach (var i in timesBorrow){
           var val=_context.BorrowBookDetails.Where(x=>x.BorrowBookId==i.BorrowBookId).Sum(x=>x.Quantity);
           items +=val;
         }
@@ -74,9 +71,9 @@ namespace book_service.Controllers
             _context.BorrowBookDetails.Add(detail);
           }
           await _context.SaveChangesAsync();
-          return Ok("Secessed!");
+          return Ok("Successed!");
         }
-        return Ok("Danh sach muon trong");
+        return BadRequest("Danh sach muon trong");
     }
 
     [Authorize(Roles=RoleName.Admin)]
@@ -101,6 +98,11 @@ namespace book_service.Controllers
       _context.BorrowBooks.Remove(borrowBook);
       return Ok("Delete success");
     }
+
+    [HttpGet("{id}/details")]
+        public IEnumerable<BorrowBookDetail> GetListBorrowDetail(int borrowid){
+            return _context.BorrowBookDetails.Where(x=>x.BorrowBookId==borrowid);
+        }
   }
   
   

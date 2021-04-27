@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace book_service.Controllers
 {
+  [Authorize]
   [Route("api/[controller]")]
   [ApiController]
   public class BookController : ControllerBase
@@ -17,6 +18,7 @@ namespace book_service.Controllers
     public BookController(BookContext context){
       _context =context;
     }
+    [Authorize(Roles=RoleName.Admin)]
     [HttpGet]
     public IEnumerable<Book> GetAllBook(){
       return _context.Books.OrderBy(x=>x.BookId);
